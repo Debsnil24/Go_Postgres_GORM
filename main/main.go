@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/Debsnil24/Go_Postgres_GORM/middleware"
 	"github.com/Debsnil24/Go_Postgres_GORM/models"
 	"github.com/Debsnil24/Go_Postgres_GORM/router"
 	"github.com/Debsnil24/Go_Postgres_GORM/storage"
@@ -31,12 +32,17 @@ func main() {
 	if err != nil {
 		log.Fatal("Couldn't Load the Database")
 	}
+	
+	err = middleware.MigrateBooks(db)
+	if err != nil {
+		log.Fatal("Could not migrate DB")
+	}
 
 	r := models.Repository{
 		DB: db,
 	}
 	
-	router := *&router.Repository{
+	router := router.Repository{
 		Repository: r,
 	}
 
