@@ -18,3 +18,12 @@ type Books struct {
 	Title		*string		`json:"title"`
 	Publisher	*string		`json:"publisher"`
 }
+
+type Config struct {
+	Host		string
+	Port		string
+	Password	string
+	User		string
+	DBName		string
+	SSLMode		string
+}

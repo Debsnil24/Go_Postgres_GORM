@@ -19,12 +19,14 @@ func main() {
 	}
 
 	config := &storage.Config{
-		Host:     os.Getenv("DB_HOST"),
-		Port:     os.Getenv("DB_PORT"),
-		Password: os.Getenv("DB_PASS"),
-		User:     os.Getenv("DB_USER"),
-		SSLMode:  os.Getenv("DB_SSL"),
-		DBName:   os.Getenv("DB_NAME"),
+		Config: models.Config{
+			Host:     os.Getenv("DB_HOST"),
+			Port:     os.Getenv("DB_PORT"),
+			Password: os.Getenv("DB_PASS"),
+			User:     os.Getenv("DB_USER"),
+			SSLMode:  os.Getenv("DB_SSL"),
+			DBName:   os.Getenv("DB_NAME"),
+		},
 	}
 
 	db, err := storage.NewConnection(config)

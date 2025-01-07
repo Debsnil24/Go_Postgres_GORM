@@ -4,17 +4,13 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Debsnil24/Go_Postgres_GORM/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type Config struct {
-	Host		string
-	Port		string
-	Password	string
-	User		string
-	DBName		string
-	SSLMode		string
+	models.Config
 }
 
 func NewConnection(config *Config)(*gorm.DB, error) {
