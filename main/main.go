@@ -12,7 +12,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -20,19 +19,19 @@ func main() {
 	}
 
 	config := &storage.Config{
-		Host: os.Getenv("DB_HOST"),
-		Port: os.Getenv("DB_PORT"),
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
 		Password: os.Getenv("DB_PASS"),
-		User: os.Getenv("DB_USER"),
-		SSLMode: os.Getenv("DB_SSL"),
-		DBName: os.Getenv("DB_NAME"),
+		User:     os.Getenv("DB_USER"),
+		SSLMode:  os.Getenv("DB_SSL"),
+		DBName:   os.Getenv("DB_NAME"),
 	}
-	
+
 	db, err := storage.NewConnection(config)
 	if err != nil {
 		log.Fatal("Couldn't Load the Database")
 	}
-	
+
 	err = middleware.MigrateBooks(db)
 	if err != nil {
 		log.Fatal("Could not migrate DB")
@@ -41,12 +40,17 @@ func main() {
 	r := models.Repository{
 		DB: db,
 	}
-	
-	router := router.Repository{
+	midRepo := middleware.Repository{
 		Repository: r,
+	}
+	router := router.Repository{
+		Repository: midRepo,
 	}
 
 	app := fiber.New()
 	router.SetupRoutes(app)
-	app.Listen(":8080")
+	log.Println("Starting Server on :8080")
+	if err := app.Listen(":8080"); err != nil {
+		log.Fatal("Failed to start server:", err)
+	}
 }
