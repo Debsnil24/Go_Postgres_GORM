@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/Debsnil24/Go_Postgres_GORM/models"
 	"github.com/Debsnil24/Go_Postgres_GORM/router"
 	"github.com/Debsnil24/Go_Postgres_GORM/storage"
 	"github.com/gofiber/fiber/v2"
@@ -21,11 +22,15 @@ func main() {
 		log.Fatal("Couldn't Load the Database")
 	}
 
-	r := router.Repository{
+	r := models.Repository{
 		DB: db,
+	}
+	
+	router := *&router.Repository{
+		Repository: r,
 	}
 
 	app := fiber.New()
-	r.SetupRoutes(app)
+	router.SetupRoutes(app)
 	app.Listen(":8080")
 }

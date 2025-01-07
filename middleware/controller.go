@@ -4,11 +4,10 @@ import (
 	"net/http"
 
 	"github.com/Debsnil24/Go_Postgres_GORM/models"
-	"github.com/Debsnil24/Go_Postgres_GORM/router"
 	"github.com/gofiber/fiber/v2"
 )
 type Repository struct {
-	router.Repository
+	models.Repository
 }
 
 func(r *Repository) CreateBook(context *fiber.Ctx) error {
@@ -27,5 +26,39 @@ func(r *Repository) CreateBook(context *fiber.Ctx) error {
 	}
 	context.Status(http.StatusOK).JSON(
 		&fiber.Map{"message": "Book Created Successfully"})
-		return nil
+	return nil
+}
+
+func(r *Repository) GetBooks(context *fiber.Ctx) error {
+	book := &[]models.Books{}
+	err := r.DB.Find(book).Error
+	if err != nil {
+		context.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"message": "Unable to Find Book"})
+		return err
+	}
+	context.Status(http.StatusOK).JSON(
+		&fiber.Map{
+			"message": "Book found Successfully",
+			"data" : book,
+	})
+	return nil
+}
+
+func(r *Repository) GetBookByID(context *fiber.Ctx) error {
+	context.Status(http.StatusOK).JSON(
+		&fiber.Map{
+			"message": "Book Found",
+			"data":  " ",
+		})
+	return nil
+}
+
+func(r *Repository) DeleteBook(context *fiber.Ctx) error {
+	context.Status(http.StatusOK).JSON(
+		&fiber.Map{
+			"message": "Book Deleted Successfully",
+			"data":  " ",
+		})
+	return nil
 }
