@@ -39,14 +39,12 @@ func main() {
 		log.Fatal("Could not migrate DB")
 	}
 
-	r := models.Repository{
-		DB: db,
-	}
-	midRepo := middleware.Repository{
-		Repository: r,
-	}
 	router := router.Repository{
-		Repository: midRepo,
+		Repository: middleware.Repository{
+			Repository: models.Repository{
+				DB: db,
+			},
+		},
 	}
 
 	app := fiber.New()

@@ -27,7 +27,7 @@ func(r *Repository) CreateBook(context *fiber.Ctx) error {
 	}
 	err = r.DB.Create(&book).Error
 	if err != nil {
-		context.Status(http.StatusBadRequest).JSON(
+		context.Status(http.StatusInternalServerError).JSON(
 			&fiber.Map{"message": "Unable to Create Book"})
 		return err
 	}
@@ -40,7 +40,7 @@ func(r *Repository) GetBooks(context *fiber.Ctx) error {
 	book := &[]models.Books{}
 	err := r.DB.Find(book).Error
 	if err != nil {
-		context.Status(http.StatusBadRequest).JSON(
+		context.Status(http.StatusInternalServerError).JSON(
 			&fiber.Map{"message": "Unable to Find Book"})
 		return err
 	}
@@ -57,14 +57,14 @@ func(r *Repository) GetBookByID(context *fiber.Ctx) error {
 
 	id := context.Params("id")
 	if id == "" {
-		context.Status(http.StatusInternalServerError).JSON(
+		context.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "ID cannot be empty"})
 		return nil
 	}
 	fmt.Printf("The ID is: %v", id)
 	err := r.DB.Where("id = ?", id).First(book).Error
 	if err != nil {
-		context.Status(http.StatusBadRequest).JSON(
+		context.Status(http.StatusInternalServerError).JSON(
 			&fiber.Map{"message" : " Couldn't get the book"})
 		return err
 	}
@@ -80,7 +80,7 @@ func(r *Repository) DeleteBook(context *fiber.Ctx) error {
 	book := models.Books{}
 	id := context.Params("id")
 	if id == "" {
-		context.Status(http.StatusInternalServerError).JSON(
+		context.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "ID cannot be Empty"})
 			return nil
 	}
@@ -88,11 +88,39 @@ func(r *Repository) DeleteBook(context *fiber.Ctx) error {
 	err := r.DB.Delete(book, id)
 
 	if err.Error != nil {
-		context.Status(http.StatusBadRequest).JSON(
+		context.Status(http.StatusInternalServerError).JSON(
 			&fiber.Map{"message": "Couldn't Delete Book"})
 		return err.Error
 	}
 	context.Status(http.StatusOK).JSON(
 		&fiber.Map{"message": "Book Deleted Successfully"})
+	return nil
+}
+
+func(r *Repository) UpdateBook(context *fiber.Ctx) error {
+	book := models.Book{}
+	err := context.BodyParser(&book)
+	if err != nil {
+		context.Status(http.StatusUnprocessableEntity).JSON(
+			&fiber.Map{"message": "Request Failed"})
+		return err
+	}
+	id := context.Params("id")
+	if id == "" {
+		context.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"message": "ID cannot be Empty"})
+			return nil
+	}
+	err = r.DB.Where("id = ?", id).Updates(&book).Error
+	if err != nil {
+		context.Status(http.StatusInternalServerError).JSON(
+			&fiber.Map{"message": "Couldn't Update Book"})
+		return err
+	}
+	context.Status(http.StatusOK).JSON(
+		&fiber.Map{
+			"message": "Book Updated Successfully",
+			"data": book,
+	})
 	return nil
 }
